@@ -104,6 +104,7 @@ replicate their semantic there it is possible.
 * `f16x8.convert_i16x8_s`
 * `f16x8.convert_i16x8_u`
 * `f16x8.demote_f32x4_zero`
+* `f16x8.demote_f64x2_zero`
 * `f32x4.promote_f16x8_low`
 * `i16x8.trunc_f16x8_s`
 * `i16x8.trunc_f16x8_u`
@@ -113,44 +114,48 @@ replicate their semantic there it is possible.
 * `f16x8.nmadd`
 
 ## Binary format
+All opcodes have the `0xFC` prefix, which are omitted in the table below.
+| instruction                           | opcode         |
+| ------------------------------------- | -------------- |
+| `f32.load_f16`                        | 0x30           |
+| `f32.store_f16`                       | 0x31           |
 
 All opcodes have the `0xFD` prefix, which are omitted in the table below.
 
 | instruction                           | opcode         |
 | ------------------------------------- | -------------- |
-| `f32.load_f16`                        | 0x120          |
-| `f32.store_f16`                       | 0x121          |
-| `f16x8.splat`                         | 0x123          |
-| `f16x8.extract_lane laneindex`        | 0x124          |
-| `f16x8.replace_lane laneindex`        | 0x125          |
-| `f16x8.eq`                            | 0x126          |
-| `f16x8.ne`                            | 0x127          |
-| `f16x8.lt`                            | 0x128          |
-| `f16x8.gt`                            | 0x129          |
-| `f16x8.le`                            | 0x12a          |
-| `f16x8.ge`                            | 0x12b          |
-| `f16x8.abs`                           | 0x12c          |
-| `f16x8.neg`                           | 0x12d          |
-| `f16x8.sqrt`                          | 0x12e          |
-| `f16x8.ceil`                          | 0x12f          |
-| `f16x8.floor`                         | 0x131          |
-| `f16x8.trunc`                         | 0x132          |
-| `f16x8.nearest`                       | 0x133          |
-| `f16x8.add`                           | 0x134          |
-| `f16x8.sub`                           | 0x135          |
-| `f16x8.mul`                           | 0x136          |
-| `f16x8.div`                           | 0x137          |
-| `f16x8.min`                           | 0x138          |
-| `f16x8.max`                           | 0x139          |
-| `f16x8.pmin`                          | 0x13a          |
-| `f16x8.pmax`                          | 0x13b          |
-| `i16x8.trunc_sat_f16x8_s`             | 0x13c          |
-| `i16x8.trunc_sat_f16x8_u`             | 0x13d          |
-| `f16x8.convert_i16x8_s`               | 0x13e          |
-| `f16x8.convert_i16x8_u`               | 0x13f          |
-| `f16x8.demote_f32x4_zero`             | 0x141          |
-| `f32x4.promote_f16x8_low`             | 0x142          |
-| `i16x8.trunc_f16x8_s`                 | 0x143          |
-| `i16x8.trunc_f16x8_u`                 | 0x144          |
-| `f16x8.madd`                          | 0x145          |
-| `f16x8.nmadd`                         | 0x146          |
+| `f16x8.splat`                         | 0x120          |
+| `f16x8.extract_lane laneindex`        | 0x121          |
+| `f16x8.replace_lane laneindex`        | 0x122          |
+| `f16x8.abs`                           | 0x130          |
+| `f16x8.neg`                           | 0x131          |
+| `f16x8.sqrt`                          | 0x132          |
+| `f16x8.ceil`                          | 0x133          |
+| `f16x8.floor`                         | 0x134          |
+| `f16x8.trunc`                         | 0x135          |
+| `f16x8.nearest`                       | 0x136          |
+| `f16x8.eq`                            | 0x137          |
+| `f16x8.ne`                            | 0x138          |
+| `f16x8.lt`                            | 0x139          |
+| `f16x8.gt`                            | 0x13a          |
+| `f16x8.le`                            | 0x13b          |
+| `f16x8.ge`                            | 0x13c          |
+| `f16x8.add`                           | 0x13d          |
+| `f16x8.sub`                           | 0x13e          |
+| `f16x8.mul`                           | 0x13f          |
+| `f16x8.div`                           | 0x140          |
+| `f16x8.min`                           | 0x141          |
+| `f16x8.max`                           | 0x142          |
+| `f16x8.pmin`                          | 0x143          |
+| `f16x8.pmax`                          | 0x144          |
+| `i16x8.trunc_sat_f16x8_s`             | 0x145          |
+| `i16x8.trunc_sat_f16x8_u`             | 0x146          |
+| `f16x8.convert_i16x8_s`               | 0x147          |
+| `f16x8.convert_i16x8_u`               | 0x148          |
+| `f16x8.demote_f32x4_zero`             | 0x149          |
+| `f16x8.demote_f64x2_zero`             | 0x14a          |
+| `f32x4.promote_f16x8_low`             | 0x14b          |
+| `i16x8.trunc_f16x8_s`                 | 0x14c          |
+| `i16x8.trunc_f16x8_u`                 | 0x14d          |
+| `f16x8.madd`                          | 0x14e          |
+| `f16x8.nmadd`                         | 0x14f          |
