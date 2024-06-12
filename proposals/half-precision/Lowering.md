@@ -1,0 +1,37 @@
+| instruction                    | AVX10/512-FP16 | F16C + AVX     | Arm64 + FEAT_FP16 |
+| ------------------------------ | -------------- | -------------- | ----------------- |
+| `f32.load_f16`<br>`struct.get`<br>`array.get`| `vmovw(dst, src_op)`<br>`vcvtph2ps(dst, dst)` | `mov(dst, src_op)`<br>`vcvtph2ps(dst, dst)` | `Ldr(dst.H(), src_op)`<br>`Fcvt(dst.S(), dst.H())` |
+| `f32.store_f16`<br>`struct.set`<br>`array.set` | `vcvtps2ph(tmp, src, 0)`<br>`Pextrw(dst_op, tmp, 0)` | `vcvtps2ph(tmp, src, 0)`<br>`Pextrw(dst_op, tmp, 0)` | `Fcvt(src.H(), src.S())`<br>`Str(src.H(), dst_op)` |
+| `f16x8.splat`                  | `vcvtps2ph(dst, src, 0)`<br>`vpbroadcastw(dst, dst)` | `vcvtps2ph(dst, src, 0)`<br>`vpbroadcastw(dst, dst)` | `Fcvt(dst.H(), src.S())`<br>`Dup(dst.V8H(), dst.H(), 0)` |
+| `f16x8.extract_lane laneindex` | `vcvtph2ps(dst, lhs)`<br>`Pshufd(dst, dst, imm_lane_idx)` | `vcvtph2ps(dst, lhs)`<br>`Pshufd(dst, dst, imm_lane_idx)` | `Mov(dst.H(), lhs.V8H(), imm_lane_idx)`<br>`Fcvt(dst.S(), dst.H())` |
+| `f16x8.replace_lane laneindex` | `vcvtps2ph(tmp, src2, 0)`<br>`vpinsrw(dst, src1, tmp, imm_lane_idx)` | `vcvtps2ph(tmp, src2, 0)`<br>`vpinsrw(dst, src1, tmp, imm_lane_idx)` | `if (dst != src1) Mov(dst.V8H(), src1.V8H())`<br>`Fcvt(tmp.H(), src2.S())`<br>`Ins(dst.V8H(), imm_lane_idx, tmp.V8H(), 0)` |
+| `f16x8.abs`                    | `vandps(dst, src, abs_mask_mem_op)` | `vandps(dst, src, abs_mask_mem_op)` | `Fabs(dst.V8H(), src.V8H())`|
+| `f16x8.neg`                    | `vxorps(dst, src, neg_mask_mem_op)` | `vxorps(dst, src, neg_mask_mem_op)` | `Fneg(dst.V8H(), src.V8H())` |
+| `f16x8.sqrt`                   | `vsqrtph(dst, src)` | `vcvtph2ps(dst, src)`<br>`vsqrtps(dst, dst)`<br>`vcvtps2ph(dst, dst, 0)` | `Fsqrt(dst.V8H(), src.V8H())` |
+| `f16x8.ceil`                   | `vrndscaleph(dst, src, kRoundUp)` | `vcvtph2ps(dst, src)`<br>`vroundps(ydst, ydst, kRoundUp)`<br>`vcvtps2ph(dst, dst, 0)` | `Frintp(dst.V8H(), src.V8H())` |
+| `f16x8.floor`                  | `vrndscaleph(dst, src, kRoundDown)` | `vcvtph2ps(dst, src)`<br>`vroundps(ydst, ydst, kRoundDown)`<br>`vcvtps2ph(dst, dst, 0)` | `Frintm(dst.V8H(), src.V8H())` |
+| `f16x8.trunc`                  | `vrndscaleph(dst, src, kRoundTrunc)` | `vcvtph2ps(dst, src)`<br>`vroundps(ydst, ydst, kRoundTrunc)`<br>`vcvtps2ph(dst, dst, 0)` | `Frintz(dst.V8H(), src.V8H())` |
+| `f16x8.nearest`                | `vrndscaleph(dst, src, kRoundNearest)` | `vcvtph2ps(dst, src)`<br>`vroundps(ydst, ydst, kRoundNearest)`<br>`vcvtps2ph(dst, dst, 0)` | `Frintn(dst.V8H(), src.V8H())` |
+| `f16x8.eq`                     | `vcmpph(dst, lhs, rhs, EQ_0Q)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vcmpeqps(dst, dst, tmp)`<br>`vpackssdw(dst, dst, dst)` | `Fcmeq(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.ne`                     | `vcmpph(dst, lhs, rhs, NEQ_0Q)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vcmpneps(dst, dst, tmp)`<br>`vpackssdw(dst, dst, dst)` | `Fcmeq(dst.V8H(), lhs.V8H(), rhs.V8H())`<br>`Mvn(dst.V8H(), dst.V8H())` |
+| `f16x8.lt`                     | `vcmpph(dst, lhs, rhs, LT_0Q)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vcmpltps(dst, dst, tmp)`<br>`vpackssdw(dst, dst, dst)` | `Fcmgt(dst.V8H(), rhs.V8H(), lhs.V8H())` |
+| `f16x8.gt`                     | `vcmpph(dst, lhs, rhs, GT_0Q)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vcmpltps(dst, tmp, dst)`<br>`vpackssdw(dst, dst, dst)` | `Fcmgt(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.le`                     | `vcmpph(dst, lhs, rhs, LE_0Q)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vcmpleps(dst, dst, tmp)`<br>`vpackssdw(dst, dst, dst)` | `Fcmge(dst.V8H(), rhs.V8H(), lhs.V8H())` |
+| `f16x8.ge`                     | `vcmpph(dst, lhs, rhs, GE_0Q)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vcmpleps(dst, tmp, dst)`<br>`vpackssdw(dst, dst, dst)` | `Fcmge(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.add`                    | `vaddph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vaddps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fadd(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.sub`                    | `vsubph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vsubps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fsub(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.mul`                    | `vmulph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vmulps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fmul(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.div`                    | `vdivph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vdivps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fdiv(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.min`                    | `vminph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vminps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fmin(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.max`                    | `vmaxph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vmaxps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fmax(dst.V8H(), lhs.V8H(), rhs.V8H())` |
+| `f16x8.pmin`                   | `vminph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vminps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fcmgt(tmp.V8H(), lhs.V8H(), rhs.V8H())`<br>`Bsl(tmp.V16B(), rhs.V16B(), lhs.V16B())`<br>`Mov(dst.V8H(), tmp)` |
+| `f16x8.pmax`                   | `vmaxph(dst, lhs, rhs)` | `vcvtph2ps(dst, lhs)`<br>`vcvtph2ps(tmp, rhs)`<br>`vmaxps(dst, dst, tmp)`<br>`vcvtps2ph(dst, dst, 0)` | `Fcmgt(tmp.V8H(), rhs.V8H(), lhs.V8H())`<br>`Bsl(tmp.V16B(), lhs.V16B(), rhs.V16B())`<br>`Mov(dst.V8H(), tmp)` |
+| `i16x8.trunc_sat_f16x8_s`      | `vcvtph2w(dst, src)` | `vcvtph2ps(dst, src)`<br>`vcmpeqps(tmp, dst, dst)`<br>`vandps(dst, dst, tmp)`<br>`vcvttps2dq(dst, dst)`<br>`vpermq(tmp, dst, 0x4E)`<br>`vpackssdw(dst, dst, tmp)` | `Fcvtzs(dst.V8H(), src.V8H())` |
+| `i16x8.trunc_sat_f16x8_u`      | `vcvtph2uw(dst, src)` | `vcvtph2ps(dst, src)`<br>`vpxor(tmp, tmp, tmp)`<br>`vmaxps(dst, dst, tmp)`<br>`vcvttps2dq(dst, dst)<br>`vpermq(tmp, dst, 0x4E)`<br>`vpackusdw(dst, dst, tmp)` | `Fcvtzu(dst.V8H(), src.V8H())` |
+| `f16x8.convert_i16x8_s`        | `vcvtw2ph(dst, src)` | `vpmovsxwd(dst, src)`<br>`vcvtdq2ps(dst, dst)`<br>`vcvtps2ph(dst, dst, 0)` | `Scvtf(dst.V8H(), src.V8H())` |
+| `f16x8.convert_i16x8_u`        | `vcvtuw2ph(dst, src)` | `vpmovzxwd(dst, src)`<br>`vcvtdq2ps(dst, dst)`<br>`vcvtps2ph(dst, dst, 0)` | `Ucvtf(dst.V8H(), src.V8H())` |
+| `f16x8.demote_f32x4_zero`      | `vcvtps2ph(dst, src, 0)` | `vcvtps2ph(dst, src, 0)` | `Fcvtn(dst.V4H(), src.V4S())` |
+| `f16x8.demote_f64x2_zero`      | `vcvtpd2ph(dst, src)` | software emulation | `Fcvtn(dst.V4H(), src.V4S())` |
+| `f32x4.promote_f16x8_low`      | `vcvtph2ps(dst, src)` | `vcvtph2ps(dst, src)` | `Fcvtl(dst.V4S(), src.V4H())` |
+| `f16x8.madd`                   | `mov(dst, src1)`<br>`vfmadd213ph(dst, src2, src3)` | `vcvtph2ps(dst, src1)`<br>`vcvtph2ps(tmp, src2)`<br>`vcvtph2ps(tmp2, src3)`<br>`vfmadd213ps(dst, tmp, tmp2)`<br>`vcvtps2ph(dst, dst, 0)` | `Mov(dst.V8H(), src3.fp().V8H())`<br>`Fmla(dst.V8H(), src1.V8H(), src2.V8H())` |
+| `f16x8.nmadd`                  | `mov(dst, src1)`<br>`vfnmadd213ph(dst, src2, src3)` | `vcvtph2ps(dst, src1)`<br>`vcvtph2ps(tmp, src2)`<br>`vcvtph2ps(tmp2, src3)`<br>`vfnmadd213ps(dst, tmp, tmp2)`<br>`vcvtps2ph(dst, dst, 0)` | `Mov(dst.V8H(), src3.fp().V8H())`<br>`Fmls(dst.V8H(), src1.V8H(), src2.V8H())` |
