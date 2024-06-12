@@ -25,6 +25,9 @@ or computational speed are bottlenecks.
 
 ARM & ARM64 devices with ARMv8.2 FP16 arithmetics extension, and includes Android phones starting with Pixel 3, Galaxy S9 (Snapdragon SoC), Galaxy S10 (Exynos SoC), iOS devices with A11 or newer SoCs, all Apple Silicon Macs, and Windows ARM64 laptops based with Snapdragon 850 SoC or newer.
 
+#### Lowering
+For suggested translation to specific ISA see the [lowering](proposals/half-precision/Lowering.md)
+
 # Types
 
 WebAssembly is extended with a new `f16` SIMD lane type.
