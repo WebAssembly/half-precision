@@ -108,7 +108,7 @@ replicate their semantic there it is possible.
 * `f16x8.convert_i16x8_u`
 * `f16x8.demote_f32x4_zero`
 * `f16x8.demote_f64x2_zero`
-* `f32x4.promote_f16x8_low`
+* `f32x4.promote_low_f16x8`
 * `i16x8.trunc_f16x8_s`
 * `i16x8.trunc_f16x8_u`
 
@@ -157,7 +157,7 @@ All opcodes have the `0xFD` prefix, which are omitted in the table below.
 | `f16x8.convert_i16x8_u`               | 0x148          |
 | `f16x8.demote_f32x4_zero`             | 0x149          |
 | `f16x8.demote_f64x2_zero`             | 0x14a          |
-| `f32x4.promote_f16x8_low`             | 0x14b          |
+| `f32x4.promote_low_f16x8`             | 0x14b          |
 | `i16x8.trunc_f16x8_s`                 | 0x14c          |
 | `i16x8.trunc_f16x8_u`                 | 0x14d          |
 | `f16x8.madd`                          | 0x14e          |
